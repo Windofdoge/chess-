@@ -1,0 +1,90 @@
+javascript:(function(){
+  var d=document,
+      s=d.createElement('script');
+  s.src='https://code.jquery.com/jquery-3.6.0.min.js';
+  d.head.appendChild(s);
+  s.onload=function(){
+    var c=d.createElement('canvas'),
+        w=c.width=560,
+        h=c.height=560;
+    c.style.cssText='position:fixed;top:0;left:0;z-index:999999999';
+    d.body.appendChild(c);
+    var ctx=c.getContext('2d'),
+        x,y,
+        dx=w/8,
+        dy=h/8,
+        isDown=false,
+        board=['rnbqkbnr',
+               'pppppppp',
+               '        ',
+               '        ',
+               '        ',
+               '        ',
+               'PPPPPPPP',
+               'RNBQKBNR'];
+    function drawBoard(){
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle='white';
+      ctx.fillRect(0,0,w,h);
+      ctx.fillStyle='black';
+      for(var i=0;i<8;i++){
+        for(var j=0;j<8;j++){
+          if((i+j)%2===0){
+            ctx.fillRect(j*dx,i*dy,dx,dy);
+          }
+        }
+      }
+      for(var i=0;i<8;i++){
+        for(var j=0;j<8;j++){
+          if(board[i][j]!==' '){
+            ctx.fillStyle='black';
+            if(board[i][j].toUpperCase()==='B'){
+              ctx.drawImage(bishop,j*dx,i*dy,dx,dy);
+            }else if(board[i][j].toUpperCase()==='K'){
+              ctx.drawImage(king,j*dx,i*dy,dx,dy);
+            }else if(board[i][j].toUpperCase()==='N'){
+              ctx.drawImage(knight,j*dx,i*dy,dx,dy);
+            }else if(board[i][j].toUpperCase()==='P'){
+              ctx.drawImage(pawn,j*dx,i*dy,dx,dy);
+            }else if(board[i][j].toUpperCase()==='Q'){
+              ctx.drawImage(queen,j*dx,i*dy,dx,dy);
+            }else if(board[i][j].toUpperCase()==='R'){
+              ctx.drawImage(rook,j*dx,i*dy,dx,dy);
+            }
+          }
+        }
+      }
+    }
+    function getPos(e){
+      var rect=c.getBoundingClientRect(),
+          x=e.clientX-rect.left,
+          y=e.clientY-rect.top;
+      return [Math.floor(y/dy),Math.floor(x/dx)];
+    }
+    function movePiece(){
+      var pos=getPos(event);
+      if(isDown){
+        if(pos[0]<0||pos[0]>7||pos[1]<0||pos[1]>7){
+          isDown=false;
+          return;
+        }
+        if(board[pos[0]][pos[1]]===' '){
+          board[pos[0]][pos[1]]=board[y][x];
+          board[y][x]=' ';
+          x=y=-1;
+          isDown=false;
+          drawBoard();
+        }
+      }
+    }
+    function mouseDown(e){
+      var pos=getPos(e);
+      if(pos[0]<0||pos[0]>7||pos[1]<0||pos[1]>7||board[pos[0]][pos[1]]===' '){
+        return;
+      }
+      isDown=true;
+      y=pos[0];
+      x=pos[1];
+    }
+    function mouseUp(e){
+     
